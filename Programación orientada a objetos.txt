@@ -1,0 +1,39 @@
+Programación orientada a objetos
+
+package Clasesyobjetos;
+
+public class persona{
+	
+	int edad;
+	String nombre;
+	
+	//metodo constructor
+	public persona(int edad, String nombre) {
+		
+		this.edad=edad;
+		this.nombre=nombre;
+		
+		
+		}
+	
+	public void mostrarDatos(){
+		System.out.println("la edad es:"+edad);
+		System.out.println("El nombre es es:"+nombre);
+		
+	}
+}
+
+public class Main {
+
+	public static void main (String[]args) {
+		
+		persona p1= new persona(8, "Yair");
+		
+		 
+		p1.mostrarDatos();
+		
+	}
+	
+	
+}
+

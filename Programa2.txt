@@ -1,0 +1,33 @@
+//Devuelve números ps
+
+package guia1;
+//Devuelve un "true" si todos los valores del array son positivos.
+
+public class Ejercicio03{
+	
+	public static void main (String[]args) {
+		
+		int[] b = {5,6,-7,8};
+		
+		boolean result= todosPostivos(b);
+		
+		System.out.println(result);
+	}
+
+	public static boolean todosPostivos(int[] b) {
+	
+		for(int i=0;i<b.length;i++) {
+			
+			if(b[i]<0) {
+				
+				return false;
+			}
+			
+		}
+	
+		return true;
+	}
+			
+	
+}
+	

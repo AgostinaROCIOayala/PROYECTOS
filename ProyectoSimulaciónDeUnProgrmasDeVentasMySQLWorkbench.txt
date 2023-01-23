@@ -1,0 +1,913 @@
+PROYECTO DE SIMULACIÓN DE UN PROGRAMA DE VENTAS/MySQL WORKBENCH 
+
+DROP DATABASE consulta;
+
+CREATE DATABASE consulta;
+
+USE consulta;
+
+/*-------------------------------------------------------*/
+/* Crear y cargar unas instancias de la tabla (Articulo) */
+/*-------------------------------------------------------*/
+CREATE TABLE Articulo
+(
+    /* Atributo Característico de la Tabla */
+    idArticulo INT NOT NULL,
+    descripcion VARCHAR(200) NOT NULL,
+    descripcionCorta VARCHAR(50) NOT NULL,
+    marca VARCHAR(200) NOT NULL,
+    tipoArticulo CHAR NOT NULL,
+    precio DOUBLE NOT NULL,
+
+    /* Clave Primaria (PK) */
+    PRIMARY KEY (idArticulo),
+
+    /* Clave Única (UK) */
+    UNIQUE KEY (descripcion),
+    UNIQUE KEY (descripcionCorta),
+
+    /* Restricción propia del Atributo Característico (CK) */
+    CHECK (tipoArticulo IN ('A', 'B', 'C')),
+    CHECK (precio > 0)
+);
+
+INSERT
+    INTO
+        Articulo
+    VALUES
+(1, 'Neumático 15x14', 'Neuma 15x14', 'Fate', 'B', 2300.00),
+(2, 'Vino Tinto Malbec', 'V T Malbec', 'Los Arboles', 'C', 60.00),
+(3, 'Rollo de Cocina Pack 3', 'Rol Coci P 3', 'Gigante', 'C', 15.40),
+(4, 'Mouse inalambico PC', 'Mouse Inal PC', 'Logic', 'C', 170.00),
+(5, 'Heladera con Frizzer Blanca 170 x 60', 'Hela c/F B 170x60', 'Dream', 'A', 12450.00),
+(6, 'Galletas Marineras', 'Galle Mari', 'Don Satur', 'C', 20.30),
+(7, 'Notebook 8G RAM 750 DR 120 DS', 'NoteBook 8G', 'IBM', 'A', 625780.00),
+(8, 'Manteca 200 g', 'Mante 200 g', 'Sancor', 'C', 23.00),
+(9, 'Leche Entera Carton', 'Leche E C', 'La Serenisima', 'C', 15.00),
+(10, 'Coca Cola 2,5 Ligth', 'Coca Light 2,5l', 'Coca Cola', 'C', 24.00),
+(11, 'Chocolate en Barras', 'Choco Barra', 'Aguila', 'C', 37.00);
+
+/*------------------------------------------------------*/
+/* Crear y cargar unas instancias de la tabla (Cliente) */
+/*------------------------------------------------------*/
+CREATE TABLE Cliente
+(
+    /* Atributo Característico de la Tabla */
+    idCliente INT NOT NULL,
+    razonSocial VARCHAR(100) NOT NULL,
+    direccion VARCHAR(100) NOT NULL,
+
+    /* Clave Primaria (PK) */
+    PRIMARY KEY (idCliente)
+);
+
+INSERT
+    INTO
+        Cliente
+    VALUES
+(1, 'Supermercado Macro', 'Panamericana 234'),
+(2, 'Disco', 'Cabildo 4356'),
+(3, 'Plaza Vea', 'Triunvirato 346'),
+(4, 'Carrefour', 'Libertador 153');
+
+/*-------------------------------------------------------*/
+/* Crear y cargar unas instancias de la tabla (Deposito) */
+/*-------------------------------------------------------*/
+CREATE TABLE Deposito
+(
+    /* Atributo Característico de la Tabla */
+    idDeposito INT NOT NULL,
+    ubicacionDeposito VARCHAR(100) NOT NULL,
+
+    /* Clave Primaria (PK) */
+    PRIMARY KEY (idDeposito),
+
+    /* Clave Única (UK) */
+    UNIQUE KEY (ubicacionDeposito)
+);
+
+INSERT
+    INTO
+        Deposito
+    VALUES
+(1, 'Av . La Plata 4304'),
+(2, 'Av. Caseros 3517'),
+(3, 'Av. Saenz Pena 1528');
+
+/*--------------------------------------------------------*/
+/* Crear y cargar unas instancias de la tabla (Deposito_has_Articulo) */
+/*--------------------------------------------------------*/
+CREATE TABLE Deposito_has_Articulo
+(
+    /* Atributo Característico de la Tabla */
+    stockActual INT NOT NULL,
+    puntoReorden INT NOT NULL,
+
+    /* Atributo Característico de la Tabla, referenciado con otra Tabla */
+    idDeposito INT NOT NULL,
+    idArticulo INT NOT NULL,
+
+
+    /* Clave Primaria (PK) */
+    PRIMARY KEY (idDeposito, idArticulo),
+
+/* Clave Lejana del Atributo Característico de la Tabla, referenciado con otra Tabla (FK) */
+    FOREIGN KEY (idDeposito) REFERENCES Deposito (idDeposito),
+    FOREIGN KEY (idArticulo) REFERENCES Articulo (idArticulo)
+);
+
+INSERT
+    INTO
+        Deposito_has_Articulo
+    VALUES
+(23, 5, 1, 1),
+(142, 20, 1, 2),
+(12, 3, 1, 4),
+(50, 10, 1, 6),
+(6, 2, 1, 7),
+(340, 30, 1, 8),
+(120, 40, 1, 10),
+(200, 15, 2, 2),
+(4, 2, 2, 5),
+(30, 10, 2, 6),
+(5, 3, 2, 7),
+(40, 10, 2, 9),
+(77, 24, 2, 10),
+(450, 70, 3, 3),
+(21, 10, 3, 4),
+(7, 3, 3, 5),
+(45, 15, 3, 8),
+(35, 15, 3, 9);
+
+/*-----------------------------------------------------------*/
+/* Crear y cargar unas instancias de la tabla (Departamento) */
+/*-----------------------------------------------------------*/
+CREATE TABLE Departamento
+(
+    /* Atributo Característico de la Tabla */
+    idDepto INT NOT NULL,
+    descripcion VARCHAR(100) NOT NULL,
+
+    /* Atributo Característico de la Tabla, referenciado con otra Tabla */
+    idEmpleResponsable INT,
+    idDeptoPadre INT,
+
+    /* Clave Primaria (PK) */
+    PRIMARY KEY (idDepto),
+
+    /* Clave Lejana del Atributo Característico de la Tabla, referenciado con otra Tabla (FK) */
+    FOREIGN KEY (idDeptoPadre) REFERENCES Departamento (idDepto)
+);
+
+INSERT
+    INTO
+        Departamento
+    VALUES
+(1, 'Directorio', NULL, NULL),
+(2, 'Gerencia General', NULL, 1),
+(3, 'Compras', NULL, 2),
+(4, 'Ventas', NULL, 2),
+(5, 'Tesoreria', NULL, 2),
+(6, 'Administración', NULL, 2),
+(7, 'Atencion al Publico', NULL, 2),
+(8, 'Recursos Humanos', NULL, 2),
+(9, 'Marketing', 23, 2);
+
+
+/*-------------------------------------------------------*/
+/* Crear y cargar unas instancias de la tabla (Empleado) */
+/*-------------------------------------------------------*/
+CREATE TABLE Empleado
+(
+    /* Atributo Característico de la Tabla */
+    idEmple INT NOT NULL,
+    apellido VARCHAR(100),
+	nombre VARCHAR(100) NOT NULL,
+    domicilio VARCHAR(100),
+    codigoPostal INT,
+    fechaNacimiento DATE,
+    fechaIngreso DATE,
+    sueldoBasico DOUBLE,
+    telefono VARCHAR(15),
+
+    /* Atributo Característico de la Tabla, referenciado con otra Tabla */
+    idDepto INT,
+    idEmpleJefe INT,
+
+    /* Clave Primaria (PK) */
+    PRIMARY KEY (idEmple),
+
+    /* Clave Lejana del Atributo Característico de la Tabla, referenciado con otra Tabla (FK) */
+    FOREIGN KEY (idDepto) REFERENCES Departamento (idDepto),
+    FOREIGN KEY (idEmpleJefe) REFERENCES Empleado (idEmple)
+);
+
+INSERT
+    INTO
+        Empleado 
+    VALUES
+(1, 'Abrego', 'Matias', 'Ciudad de la Paz 2539 Piso: 6 Depto A', 2142, STR_TO_DATE('24/03/1973', '%d/%m/%Y'), STR_TO_DATE('06/03/1998', '%d/%m/%Y'), 10605.23, '46573421', 3, NULL),
+(2, 'Angelini Saleh', 'Nadir', 'Carlos Calvo 352 piso: 4 Unidad: 12', 3562, STR_TO_DATE('17/08/1984', '%d/%m/%Y'), STR_TO_DATE('12/06/2010', '%d/%m/%Y'), 15810.40, '1589723458', 6, NULL),
+(3, 'Aldana', 'Guillermo Nicolas', 'Suipacha 342 Piso: 3 Depto: B', 1010, STR_TO_DATE('18/10/1984', '%d/%m/%Y'), STR_TO_DATE('11/04/2011', '%d/%m/%Y'), 23489.32, '47458932', 5, NULL),
+(4, 'Alvarez', 'Yesica Soledad', 'Juan B Justo 4536', 2030, STR_TO_DATE('14/02/1975', '%d/%m/%Y'), STR_TO_DATE('01/11/2008', '%d/%m/%Y'), 20190.21, '1543905672', 6, NULL),
+(5, 'Basteiro', 'Maria Mercedes', 'Triunvirato 234 Piso: 10 Depto: 11', 3021, STR_TO_DATE('10/09/1973', '%d/%m/%Y'), STR_TO_DATE('16/07/1998', '%d/%m/%Y'), 24724.90, '1532416755', 6, NULL),
+(6, 'Belohlavek', 'Daniel', 'Cabildo 234', 1467, STR_TO_DATE('24/03/1984', '%d/%m/%Y'), STR_TO_DATE('01/09/2010', '%d/%m/%Y'), 8923.15, '46579023', 4, NULL),
+(7, 'Costantino', 'Federico', 'Rivadavia 1204 Piso: 4 Depto: 6', 2010, STR_TO_DATE('03/10/1981', '%d/%m/%Y'), STR_TO_DATE('02/12/2014', '%d/%m/%Y'), 35823.46, '1576534210', 3, NULL),
+(8, 'Corrales', 'Julian', 'Callao 2412', 1200, STR_TO_DATE('21/05/1973', '%d/%m/%Y'), STR_TO_DATE('24/03/2003', '%d/%m/%Y'), 9054.67, '43527852', 6, NULL),
+(9, 'Diaz', 'Marcos', 'Alvarez Jonte 3920 Piso: 2 Depto 23', 6427, STR_TO_DATE('07/11/1989', '%d/%m/%Y'), STR_TO_DATE('16/06/2005', '%d/%m/%Y'), 21476.45, '1536437859', 3, NULL),
+(10, 'Diaz', 'Nicolas Alejandro', 'Alvarez Jonte 540', 4051, STR_TO_DATE('12/12/1975', '%d/%m/%Y'), STR_TO_DATE('24/03/1998', '%d/%m/%Y'), 9345.23, '48543469', 7, NULL),
+(11, 'Dominguez', 'Alexis', 'Santa Fe 3428', 1476, STR_TO_DATE('04/09/1987', '%d/%m/%Y'), STR_TO_DATE('24/03/2011', '%d/%m/%Y'), 14854.34, '1543946295', 9, NULL),
+(12, 'Eguibar', 'Matias', 'Lopez de Vega 3146', 5063, STR_TO_DATE('01/08/1991', '%d/%m/%Y'), STR_TO_DATE('15/02/2013', '%d/%m/%Y'), 43723.36, '43431548', 5, NULL),
+(13, 'Franco', 'Carlos Alberto', 'Darwin 524 Piso: 1 Depto: F', 1305, STR_TO_DATE('17/01/1992', '%d/%m/%Y'), STR_TO_DATE('11/10/2015', '%d/%m/%Y'), 16294.54, '1545637829', 5, NULL),
+(14, 'Gallotto', 'Tomas', 'Entre Rios 1200', 3867, STR_TO_DATE('20/04/1974', '%d/%m/%Y'), STR_TO_DATE('30/03/2000', '%d/%m/%Y'), 27456.67, '45413634', 9, NULL),
+(15, 'Gomez', 'Nicolas', 'Combate de los Pozos 1433 Piso: 7 Depto: A', 4672, STR_TO_DATE('19/07/1977', '%d/%m/%Y'), STR_TO_DATE('21/12/1999', '%d/%m/%Y'), 20456.36, '1543214573', 6, NULL),
+(16, 'Gonzalez Rosas', 'Maria Isabel', 'Ciudad de la Paz 1640 Piso: 8 Dept: 4', 1460, STR_TO_DATE('14/02/1983', '%d/%m/%Y'), STR_TO_DATE('26/03/2009', '%d/%m/%Y'), 24294.56, '43267547', 8, NULL),
+(17, 'Herrera', 'Alvaro', 'Chenaut 1739 Piso: 6 Depto 25', 2346, STR_TO_DATE('03/08/1972', '%d/%m/%Y'), STR_TO_DATE('22/04/1999', '%d/%m/%Y'), 9345.76, '1534265387', 3, NULL),
+(18, 'Kingston', 'Matias', 'Castro Barros 247', 2343, STR_TO_DATE('05/01/1982', '%d/%m/%Y'), STR_TO_DATE('18/05/2013', '%d/%m/%Y'), 11823.68, '45433792', 9, NULL),
+(19, 'Klein', 'Julia', 'Ortega y Gasset 1890 Piso: 3 Depto D', 1432, STR_TO_DATE('04/12/1976', '%d/%m/%Y'), STR_TO_DATE('13/06/2007', '%d/%m/%Y'), 27345.69, '1542423563', 5, NULL),
+(20, 'Lopez', 'Agustin', 'Constituyentes 275', 1400, STR_TO_DATE('11/08/1986', '%d/%m/%Y'), STR_TO_DATE('19/04/2009', '%d/%m/%Y'), 11893.83, '45553743', 4, NULL),
+(21, 'Luna', 'Jose', 'Callao 1300', 1060, STR_TO_DATE('29/07/1988', '%d/%m/%Y'), STR_TO_DATE('11/04/2006', '%d/%m/%Y'), 17345.91, '1564127644', 8, NULL),
+(22, 'Mariano', 'Jonathan J.', 'Echevarria 2450 Piso: 5 Depto: A', 1780, STR_TO_DATE('03/10/1979', '%d/%m/%Y'), STR_TO_DATE('28/06/2014', '%d/%m/%Y'), 42456.23, '1587694567', 4, NULL),
+(23, 'Melidone', 'Nazareno', 'Córdoba 1840 Piso: 4 Depto 32', 2341, STR_TO_DATE('24/09/1983', '%d/%m/%Y'), STR_TO_DATE('01/09/2010', '%d/%m/%Y'), 13873.45, '45764518', 9, NULL),
+(24, 'Mendez', 'Eric Maximiliano', 'Congreso 439', 2343, STR_TO_DATE('12/05/1975', '%d/%m/%Y'), STR_TO_DATE('19/06/1998', '%d/%m/%Y'), 8894.12, '1565737648', 5, NULL),
+(25, 'Nakamura', 'Federico Kenji', 'Paseo Colon 564', 1005, STR_TO_DATE('02/01/1987', '%d/%m/%Y'), STR_TO_DATE('25/04/2004', '%d/%m/%Y'), 39345.24, '43443581', 8, NULL),
+(26, 'Oshiro', 'Alejandro', 'Pasco 41', 1100, STR_TO_DATE('03/08/1991', '%d/%m/%Y'), STR_TO_DATE('02/09/2015', '%d/%m/%Y'), 10434.78, '1576879046', 4, NULL),
+(27, 'Pogonza', 'Sergio', 'Castro Barros 1328 Piso: 2 Unidad: 8', 1564, STR_TO_DATE('01/02/1971', '%d/%m/%Y'), STR_TO_DATE('08/04/1999', '%d/%m/%Y'), 9483.24, '48994503', 9, NULL),
+(28, 'Salvador', 'Emanuel', 'Aguero 3023 Piso: PB Depto: 2', 1350, STR_TO_DATE('17/11/1984', '%d/%m/%Y'), STR_TO_DATE('27/08/2003', '%d/%m/%Y'), 63483.65, '1546571232', 2, NULL),
+(29, 'Salvatore', 'Lucio', 'Lima 2047 Piso: 4 Depto: 33', 1350, STR_TO_DATE('01/05/1988', '%d/%m/%Y'), STR_TO_DATE('14/03/2010', '%d/%m/%Y'), 14343.18, '47776582', 5, NULL),
+(30, 'Segovia', 'Mayra', 'Lopez de Vega 278', 2432, STR_TO_DATE('10/06/1976', '%d/%m/%Y'), STR_TO_DATE('22/06/1999', '%d/%m/%Y'), 16342.67, '1546378760', 3, NULL),
+(31, 'Seoane', 'Gonzalo Sebastian', 'Darwin 2032 Piso: 10 Depto: C', 1876, STR_TO_DATE('09/08/1982', '%d/%m/%Y'), STR_TO_DATE('08/02/2012', '%d/%m/%Y'), 14894.23, '1534265489', 8, NULL),
+(32, 'Trillo', 'Agostina Paula', 'Alma Fuerte 34', 6043, STR_TO_DATE('12/04/1978', '%d/%m/%Y'), STR_TO_DATE('13/07/2006', '%d/%m/%Y'), 38453.89, '47652364', 7, NULL), 
+(33, 'Via Laprida', 'Matias', 'Libertador 3473', 3245, STR_TO_DATE('06/06/1983', '%d/%m/%Y'), STR_TO_DATE('04/07/2005', '%d/%m/%Y'), 9234.56, '1587974053', 7, NULL),
+(34, 'Villaverde', 'Diego Leandro', 'Cabildo 2344 Piso: 5 Depto: F', 1543, STR_TO_DATE('14/05/1981', '%d/%m/%Y'), STR_TO_DATE('14/05/2007', '%d/%m/%Y'), 7893.40, '47844361', 8, NULL),
+(35, 'Viñas Berbeka', 'Rodrigo Marcos', 'Amenabar 1549 Piso: 8', 1426, STR_TO_DATE('03/08/1990', '%d/%m/%Y'), STR_TO_DATE('12/03/2013', '%d/%m/%Y'), 26234.87, '1563454910', 4, NULL);
+
+/*-------------------------------------------------------*/
+/* Crear y cargar unas instancias de la tabla (Nuevos_Empleados) */
+/*-------------------------------------------------------*/
+CREATE TABLE Nuevos_Empleados
+(
+    /* Atributo Característico de la Tabla */
+    idEmple INT NOT NULL,
+    apellido VARCHAR(100),
+	nombre VARCHAR(100) NOT NULL,
+    domicilio VARCHAR(100),
+    codigoPostal INT,
+    fechaNacimiento DATE,
+    fechaIngreso DATE,
+    sueldoBasico DOUBLE,
+    telefono VARCHAR(15),
+
+    /* Atributo Característico de la Tabla, referenciado con otra Tabla */
+    idDepto INT,
+    idEmpleJefe INT,
+
+    /* Clave Primaria (PK) */
+    PRIMARY KEY (idEmple),
+
+    /* Clave Lejana del Atributo Característico de la Tabla, referenciado con otra Tabla (FK) */
+    FOREIGN KEY (idDepto) REFERENCES Departamento (idDepto),
+    FOREIGN KEY (idEmpleJefe) REFERENCES Empleado (idEmple)
+);
+
+INSERT
+    INTO
+        Nuevos_Empleados
+    VALUES
+(1, 'Ayala', 'Agostina', 'Montes De Oca 2539 Piso: 6 Depto A', 2142, STR_TO_DATE('24/03/1973', '%d/%m/%Y'), STR_TO_DATE('06/03/1998', '%d/%m/%Y'), 10605.23, '46573421', 3, NULL),
+(2, 'Angel', 'Soraya', 'Carlos Calvo 352 piso: 4 Unidad: 12', 3562, STR_TO_DATE('17/08/1984', '%d/%m/%Y'), STR_TO_DATE('12/06/2010', '%d/%m/%Y'), 15810.40, '1589723458', 6, NULL),
+(3, 'Alan', 'Guillermo Nicolas', 'Suipacha 342 Piso: 3 Depto: B', 1010, STR_TO_DATE('18/10/1984', '%d/%m/%Y'), STR_TO_DATE('11/04/2011', '%d/%m/%Y'), 23489.32, '47458932', 5, NULL),
+(4, 'Alvarez', 'Yesica Soledad', 'Juan B Justo 4536', 2030, STR_TO_DATE('14/02/1975', '%d/%m/%Y'), STR_TO_DATE('01/11/2008', '%d/%m/%Y'), 20190.21, '1543905672', 6, NULL),
+(5, 'Basteiro', 'Maria Mercedes', 'Triunvirato 234 Piso: 10 Depto: 11', 3021, STR_TO_DATE('10/09/1973', '%d/%m/%Y'), STR_TO_DATE('16/07/1998', '%d/%m/%Y'), 24724.90, '1532416755', 6, NULL),
+(6, 'Belen', 'Tati', 'Cabildo 234', 1467, STR_TO_DATE('24/03/1984', '%d/%m/%Y'), STR_TO_DATE('01/09/2010', '%d/%m/%Y'), 8923.15, '46579023', 4, NULL),
+(7, 'Costantino', 'Federico', 'Rivadavia 1204 Piso: 4 Depto: 6', 2010, STR_TO_DATE('03/10/1981', '%d/%m/%Y'), STR_TO_DATE('02/12/2014', '%d/%m/%Y'), 35823.46, '1576534210', 3, NULL),
+(8, 'Corrales', 'Julian', 'Callao 2412', 1200, STR_TO_DATE('21/05/1973', '%d/%m/%Y'), STR_TO_DATE('24/03/2003', '%d/%m/%Y'), 9054.67, '43527852', 6, NULL),
+(9, 'Diaz', 'Marcos', 'Alvarez Jonte 3920 Piso: 2 Depto 23', 6427, STR_TO_DATE('07/11/1989', '%d/%m/%Y'), STR_TO_DATE('16/06/2005', '%d/%m/%Y'), 21476.45, '1536437859', 3, NULL),
+(10, 'Diaz', 'Nicolas Alejandro', 'Alvarez Jonte 540', 4051, STR_TO_DATE('12/12/1975', '%d/%m/%Y'), STR_TO_DATE('24/03/1998', '%d/%m/%Y'), 9345.23, '48543469', 7, NULL),
+(11, 'Dominguez', 'Alexis', 'Santa Fe 3428', 1476, STR_TO_DATE('04/09/1987', '%d/%m/%Y'), STR_TO_DATE('24/03/2011', '%d/%m/%Y'), 14854.34, '1543946295', 9, NULL),
+(12, 'Eguibar', 'Martin', 'Lopez de Vega 3146', 5063, STR_TO_DATE('01/08/1991', '%d/%m/%Y'), STR_TO_DATE('15/02/2013', '%d/%m/%Y'), 43723.36, '43431548', 5, NULL),
+(13, 'Emiliano', 'Bustamante', 'Darwin 524 Piso: 1 Depto: F', 1305, STR_TO_DATE('17/01/1992', '%d/%m/%Y'), STR_TO_DATE('11/10/2015', '%d/%m/%Y'), 16294.54, '1545637829', 5, NULL),
+(14, 'Gallotto', 'Tomas', 'Entre Rios 1200', 3867, STR_TO_DATE('20/04/1974', '%d/%m/%Y'), STR_TO_DATE('30/03/2000', '%d/%m/%Y'), 27456.67, '45413634', 9, NULL),
+(15, 'Gomez', 'Nicolas', 'Combate de los Pozos 1433 Piso: 7 Depto: A', 4672, STR_TO_DATE('19/07/1977', '%d/%m/%Y'), STR_TO_DATE('21/12/1999', '%d/%m/%Y'), 20456.36, '1543214573', 6, NULL),
+(16, 'Gonzalez Rosas', 'Maria Isabel', 'Ciudad de la Paz 1640 Piso: 8 Dept: 4', 1460, STR_TO_DATE('14/02/1983', '%d/%m/%Y'), STR_TO_DATE('26/03/2009', '%d/%m/%Y'), 24294.56, '43267547', 8, NULL),
+(17, 'Herrera', 'Alvaro', 'Chenaut 1739 Piso: 6 Depto 25', 2346, STR_TO_DATE('03/08/1972', '%d/%m/%Y'), STR_TO_DATE('22/04/1999', '%d/%m/%Y'), 9345.76, '1534265387', 3, NULL),
+(18, 'Kingston', 'Manuel', 'Castro Barros 247', 2343, STR_TO_DATE('05/01/1982', '%d/%m/%Y'), STR_TO_DATE('18/05/2013', '%d/%m/%Y'), 11823.68, '45433792', 9, NULL),
+(19, 'Klein', 'Julia', 'Ortega y Gasset 1890 Piso: 3 Depto D', 1432, STR_TO_DATE('04/12/1976', '%d/%m/%Y'), STR_TO_DATE('13/06/2007', '%d/%m/%Y'), 27345.69, '1542423563', 5, NULL),
+(20, 'Lopez', 'Abigail', 'Constituyentes 275', 1400, STR_TO_DATE('11/08/1986', '%d/%m/%Y'), STR_TO_DATE('19/04/2009', '%d/%m/%Y'), 11893.83, '45553743', 4, NULL),
+(21, 'Pereyra', 'Martin', 'Callao 1300', 1060, STR_TO_DATE('29/07/1988', '%d/%m/%Y'), STR_TO_DATE('11/04/2006', '%d/%m/%Y'), 17345.91, '1564127644', 8, NULL),
+(22, 'Mariano', 'Jonathan J.', 'Echevarria 2450 Piso: 5 Depto: A', 1780, STR_TO_DATE('03/10/1979', '%d/%m/%Y'), STR_TO_DATE('28/06/2014', '%d/%m/%Y'), 42456.23, '1587694567', 4, NULL),
+(23, 'Melidone', 'Nazareno', 'Córdoba 1840 Piso: 4 Depto 32', 2341, STR_TO_DATE('24/09/1983', '%d/%m/%Y'), STR_TO_DATE('01/09/2010', '%d/%m/%Y'), 13873.45, '45764518', 9, NULL),
+(24, 'Mendez', 'Eric Maximiliano', 'Congreso 439', 2343, STR_TO_DATE('12/05/1975', '%d/%m/%Y'), STR_TO_DATE('19/06/1998', '%d/%m/%Y'), 8894.12, '1565737648', 5, NULL),
+(25, 'Nakamura', 'Federico Kenji', 'Paseo Colon 564', 1005, STR_TO_DATE('02/01/1987', '%d/%m/%Y'), STR_TO_DATE('25/04/2004', '%d/%m/%Y'), 39345.24, '43443581', 8, NULL),
+(26, 'Oshiro', 'Alejandro', 'Pasco 41', 1100, STR_TO_DATE('03/08/1991', '%d/%m/%Y'), STR_TO_DATE('02/09/2015', '%d/%m/%Y'), 10434.78, '1576879046', 4, NULL),
+(27, 'Pogonza', 'Sergio', 'Castro Barros 1328 Piso: 2 Unidad: 8', 1564, STR_TO_DATE('01/02/1971', '%d/%m/%Y'), STR_TO_DATE('08/04/1999', '%d/%m/%Y'), 9483.24, '48994503', 9, NULL),
+(28, 'Salvador', 'Emanuel', 'Aguero 3023 Piso: PB Depto: 2', 1350, STR_TO_DATE('17/11/1984', '%d/%m/%Y'), STR_TO_DATE('27/08/2003', '%d/%m/%Y'), 63483.65, '1546571232', 2, NULL),
+(29, 'Salvatore', 'Lucio', 'Lima 2047 Piso: 4 Depto: 33', 1350, STR_TO_DATE('01/05/1988', '%d/%m/%Y'), STR_TO_DATE('14/03/2010', '%d/%m/%Y'), 14343.18, '47776582', 5, NULL),
+(30, 'Segovia', 'Mayra', 'Lopez de Vega 278', 2432, STR_TO_DATE('10/06/1976', '%d/%m/%Y'), STR_TO_DATE('22/06/1999', '%d/%m/%Y'), 16342.67, '1546378760', 3, NULL),
+(31, 'Seoane', 'Gonzalo Sebastian', 'Darwin 2032 Piso: 10 Depto: C', 1876, STR_TO_DATE('09/08/1982', '%d/%m/%Y'), STR_TO_DATE('08/02/2012', '%d/%m/%Y'), 14894.23, '1534265489', 8, NULL),
+(32, 'Trillo', 'Agostina Paula', 'Alma Fuerte 34', 6043, STR_TO_DATE('12/04/1978', '%d/%m/%Y'), STR_TO_DATE('13/07/2006', '%d/%m/%Y'), 38453.89, '47652364', 7, NULL), 
+(33, 'Via Laprida', 'Matias', 'Libertador 3473', 3245, STR_TO_DATE('06/06/1983', '%d/%m/%Y'), STR_TO_DATE('04/07/2005', '%d/%m/%Y'), 9234.56, '1587974053', 7, NULL),
+(34, 'Villaverde', 'Diego Leandro', 'Cabildo 2344 Piso: 5 Depto: F', 1543, STR_TO_DATE('14/05/1981', '%d/%m/%Y'), STR_TO_DATE('14/05/2007', '%d/%m/%Y'), 7893.40, '47844361', 8, NULL),
+(35, 'Varela Berbeka', 'Hwasa', 'Amenabar 1549 Piso: 8', 1426, STR_TO_DATE('03/08/1990', '%d/%m/%Y'), STR_TO_DATE('12/03/2013', '%d/%m/%Y'), 26234.87, '1563454910', 4, NULL);
+
+/*-----------------------------------------------------*/
+/* Crear y cargar unas instancias de la tabla (Pedido) */
+/*-----------------------------------------------------*/
+CREATE TABLE Pedido
+(
+    /* Atributo Característico de la Tabla */
+    idPedido INT NOT NULL,
+    fechaPactadaEntrega DATE NOT NULL,
+    fechaRealEntrega DATE,
+
+    /* Atributo Característico de la Tabla, referenciado con otra Tabla */
+    idDepositoEntrega INT NOT NULL,
+    idCliente INT NOT NULL,
+    idEmple INT NOT NULL,
+
+    /* Clave Primaria (PK) */
+    PRIMARY KEY (idPedido),
+
+    /* Clave Lejana del Atributo Característico de la Tabla, referenciado con otra Tabla (FK) */
+    FOREIGN KEY (idDepositoEntrega) REFERENCES Deposito (idDeposito),
+    FOREIGN KEY (idCliente) REFERENCES Cliente (idCliente),
+    FOREIGN KEY (idEmple) REFERENCES Empleado (idEmple)
+);
+
+INSERT
+    INTO
+        Pedido
+    VALUES
+(1, STR_TO_DATE('10/10/1999', '%d/%m/%Y'), STR_TO_DATE('20/10/1999', '%d/%m/%Y'), 2, 3, 6),
+(2, STR_TO_DATE('12/08/2000', '%d/%m/%Y'), STR_TO_DATE('18/12/2000', '%d/%m/%Y'), 3, 1, 20),
+(3, STR_TO_DATE('21/02/2001', '%d/%m/%Y'), STR_TO_DATE('03/03/2001', '%d/%m/%Y'), 2, 4, 6),
+(4, STR_TO_DATE('07/11/2001', '%d/%m/%Y'), STR_TO_DATE('15/11/2001', '%d/%m/%Y'), 1, 1, 6),
+(5, STR_TO_DATE('15/04/2004', '%d/%m/%Y'), STR_TO_DATE('27/04/2004', '%d/%m/%Y'), 3, 2, 26),
+(6, STR_TO_DATE('19/07/2007', '%d/%m/%Y'), STR_TO_DATE('26/07/2007', '%d/%m/%Y'), 3, 4, 26),
+(7, STR_TO_DATE('02/04/2010', '%d/%m/%Y'), STR_TO_DATE('15/04/2010', '%d/%m/%Y'), 2, 3, 6),
+(8, STR_TO_DATE('17/06/2015', '%d/%m/%Y'), STR_TO_DATE('03/07/2015', '%d/%m/%Y'), 1, 1, 20);
+
+/*--------------------------------------------------------------------------------------*/
+/* Crear y cargar unas instancias de la tabla (Pedido_has_Articulo) */
+/*--------------------------------------------------------------------------------------*/
+CREATE TABLE Pedido_has_Articulo
+(
+    /* Atributo Característico de la Tabla */
+    cantidad  INT NOT NULL,
+
+    /* Atributo Característico de la Tabla, referenciado con otra Tabla */
+    idPedido INT NOT NULL,
+    idArticulo INT NOT NULL,
+
+    /* Clave Primaria (PK) */
+    PRIMARY KEY (idPedido, idArticulo),
+
+    /* Restricción propia del Atributo Característico (CK) */
+    CHECK (cantidad > 0),
+
+    /* Clave Lejana del Atributo Característico de la Tabla, referenciado con otra Tabla (FK) */
+    FOREIGN KEY (idPedido) REFERENCES Pedido (idPedido),
+    FOREIGN KEY (idArticulo) REFERENCES Articulo (idArticulo)
+);
+
+INSERT
+    INTO
+        Pedido_has_Articulo
+    VALUES
+(6, 1, 3),
+(3, 1, 8),
+(5, 1, 9),
+(1, 2, 4),
+(1, 2, 7),
+(1, 3, 5),
+(3, 4, 2),
+(2, 4, 6),
+(4, 4, 8),
+(12, 4, 10),
+(2, 5, 1),
+(4, 5, 2),
+(2, 5, 3),
+(2, 6, 4),
+(2, 6, 7),
+(5, 7, 2),
+(3, 7, 8),
+(4, 7, 9),
+(4, 8, 2),
+(3, 8, 6),
+(2, 8, 8),
+(3, 8, 9);
+
+/*---------------------------------------------------------------------------------/*
+1. Recuperar los números de pedidos y los nombres de los clientes para los pedidos
+que vencen mañana. La fecha de entrega representa la fecha en que vence el
+plazo comprometido con el cliente (AR).
+/*--------------------------------------------------------------------------------*/
+SELECT idPedido, cliente.razonSocial
+FROM pedido, cliente
+WHERE fechaRealEntrega= '2015-07-03';
+/*---------------------------------------------------------------------------------------/*
+2. Recuperar los renglones de todos los pedidos, incluyendo la descripción del artículo. 
+/*--------------------------------------------------------------------------------------*/
+SELECT pedido.*, articulo.descripcion
+FROM pedido, articulo;
+/*-------------------------------------------------------------------------------------------/*
+3.  Calcular para cada renglón de pedido el costo del mismo (total de renglón más 21% de IVA).
+/*-------------------------------------------------------------------------------------------*/
+SELECT pedido.*,precio, precio*1.21 AS PRECIO_CON_IVA 
+FROM pedido, articulo;
+/*-----------------------------------------------------------------------------------------------/*
+4.  Listar los datos de los artículos que se encuentren a menos de un 10 % de supunto de reorden.
+/*-----------------------------------------------------------------------------------------------*/
+SELECT articulo.*
+FROM articulo, deposito_has_articulo
+WHERE puntoReorden<0.1;
+/*-------------------------------------------------------------/*
+5.  Recuperar los apellidos de los empleados (sin repeticiones).
+/*------------------------------------------------------------*/
+ SELECT DISTINCT apellido
+ FROM empleado;
+/*-------------------------------------------------------------------------/*
+6.  Recuperar todos los números de los clientes cuyo nombre empiece con M.).
+/*---------------------------------------------------------------------- */
+SELECT IdCliente, razonSocial 
+FROM Cliente
+WHERE razonSocial like 'M%';
+/*--------------------------------------------------------------/*
+7.  Recuperar todos los datos de los empleados de apellido Perez.
+/*  ------------------------------------------------------------*/
+ SELECT *
+ FROM empleado
+ WHERE apellido='Perez';
+ /*------------------------------------------------------------------------------------/*
+ 8.  Recuperar los números de los pedidos que compraron el artículo, 2, 4, 6, 8 ó 10 (AR).
+ /*------------------------------------------------------------------------------------*/
+SELECT distinct idPedido
+FROM pedido, articulo
+WHERE  idArticulo IN (2,4,6,8,10);
+/*-------------------------------------------------------------/*
+9.  Listar los artículos cuyo precio esté entre 20.000 y 50.000.
+/*  ----------------------------------------------------------*/
+ SELECT *
+ FROM articulo
+ WHERE precio BETWEEN 20.000 AND 50.000;
+/*-------------------------------------------------------------/*
+10.  Listar los pedidos que vencen la semana próxima.
+/*-------------------------------------------------------------*/
+SELECT *
+FROM pedido
+WHERE fechaPactadaEntrega = '2015-06-17';
+/*-------------------------------------------------------------------/*
+ 11.  Recuperar los pedidos para los cuales no se informó el cliente.
+/*-------------------------------------------------------------------*/
+SELECT *
+FROM pedido
+where idCliente NOT IN (SELECT idCliente
+                        FROM pedido);
+/*----------------------------------------------------------------------------------------------/*
+12. Recuperar los artículos cuya primera letra sea una R o una T y que luego continúan con S500.
+/*----------------------------------------------------------------------------------------------*/
+SELECT *
+FROM articulo
+WHERE descripcionCorta LIKE 'R%' or 'TS500%' ;
+/*------------------------------------------------------------------------------/*
+13.  Recuperar los nombres de los diferentes artículos que tienen pedidos. (AR).
+/*-----------------------------------------------------------------------------*/
+SELECT  descripcion AS Nombre_Articulo
+FROM articulo
+WHERE idArticulo IN (SELECT idArticulo
+                     FROM pedido_has_articulo);
+/*---------------------------.------------------------------/*
+14. Recuperar los artículos que nunca fueron pedidos. (AR).
+/*--------------------------------------------------------*/
+SELECT *
+FROM articulo
+WHERE idArticulo NOT IN (SELECT idArticulo
+						FROM pedido_has_articulo);
+/*--------------------------------------------------------------------------------------/*
+15. Recuperar el nombre de los empleados que no efectuaron ningún pedido esta semana. (AR).
+/*--------------------------------------------------------------------------------------*/
+SELECT nombre
+FROM empleado
+WHERE idEmple NOT IN (SELECT idEmple
+                      FROM pedido);
+                      
+/*-------------------------------------------------------------------------------/*
+16. Crear una tabla con nuevos pedidos. Listar los pedidos “viejos” y los nuevos
+/*------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------*/
+/* Crear y cargar unas instancias de la tabla (nuevoPedido) */
+/*---------------------------------------------------------*/
+CREATE TABLE nuevoPedido
+(
+    /* Atributo Característico de la Tabla */
+    idPedido INT NOT NULL,
+    fechaPactadaEntrega DATE NOT NULL,
+    fechaRealEntrega DATE,
+
+    /* Atributo Característico de la Tabla, referenciado con otra Tabla */
+    idDepositoEntrega INT NOT NULL,
+    idCliente INT NOT NULL,
+    idEmple INT NOT NULL,
+
+    /* Clave Primaria (PK) */
+    PRIMARY KEY (idPedido),
+
+    /* Clave Lejana del Atributo Característico de la Tabla, referenciado con otra Tabla (FK) */
+    FOREIGN KEY (idDepositoEntrega) REFERENCES Deposito (idDeposito),
+    FOREIGN KEY (idCliente) REFERENCES Cliente (idCliente),
+    FOREIGN KEY (idEmple) REFERENCES Empleado (idEmple)
+);
+
+INSERT
+    INTO
+        nuevoPedido
+    VALUES
+(9, STR_TO_DATE('10/10/2016', '%d/%m/%Y'), STR_TO_DATE('20/10/2016', '%d/%m/%Y'), 3, 3, 6),
+(10, STR_TO_DATE('12/08/2016', '%d/%m/%Y'), STR_TO_DATE('18/12/2016', '%d/%m/%Y'), 1, 2, 20),
+(11, STR_TO_DATE('21/02/2016', '%d/%m/%Y'), STR_TO_DATE('03/03/2016', '%d/%m/%Y'), 2, 4, 26),
+(12, STR_TO_DATE('07/11/2017', '%d/%m/%Y'), STR_TO_DATE('15/11/2017', '%d/%m/%Y'), 1, 1, 6),
+(13, STR_TO_DATE('15/04/2017', '%d/%m/%Y'), STR_TO_DATE('27/04/2017', '%d/%m/%Y'), 3, 2, 6),
+(14, STR_TO_DATE('19/07/2018', '%d/%m/%Y'), STR_TO_DATE('26/07/2018', '%d/%m/%Y'), 2, 3, 6),
+(15, STR_TO_DATE('02/04/2019', '%d/%m/%Y'), STR_TO_DATE('15/04/2019', '%d/%m/%Y'), 2, 3, 20),
+(16, STR_TO_DATE('17/06/2020', '%d/%m/%Y'), STR_TO_DATE('03/07/2020', '%d/%m/%Y'), 1, 3, 20);
+SELECT  * 
+FROM pedido
+UNION
+SELECT *
+FROM nuevopedido;
+ /*-----------------------------------------------------------------------------------------/*           
+ 17. Listar todos los pedidos de la tabla anterior ordenados por fecha de entrega decreciente.
+ /*-----------------------------------------------------------------------------------------*/
+SELECT * 
+FROM pedido
+ORDER BY fechaRealEntrega DESC;
+/*------------------------------------------------------------------------------/*
+18. Recuperar el total de sueldos y el promedio de sueldos para cada departamento.
+/*----------------------------------------------------------------------------- */
+SELECT SUM(sueldoBasico),AVG(sueldoBasico), departamento.idDepto
+FROM empleadO, departamento;
+/*----------------------------------------/*
+19. Recuperar el costo total de cada pedido.
+/*----------------------------------------*/
+SELECT SUM(precio), pedido.idPedido
+FROM articulo inner join pedido on articulo.IdArticulo=pedido.idPedido
+GROUP BY idPedido;
+/*----------------------------------------------------------------------------------------/*
+20. Recuperar el total de unidades de cada artículo que hay que entregar la próxima semana.
+/*--------------------------------------------------------------------------------------*/
+SELECT SUM(stockActual), articulo.idArticulo
+FROM deposito_has_articulo, articulo
+GROUP BY idArticulo;
+/*---------------------------------------------------------------------------------------/*
+21. Recuperar los datos de los empleados que tienen más de 3 pedidos pendientes de entrega.
+/*--------------------------------------------------------------------------------------*/
+SELECT *
+FROM empleado, pedido_has_articulo
+WHERE idEmple IN (SELECT idEmple
+                  FROM pedido
+                  where cantidad>3);
+
+/*-----------------------------------------------------------------------------------------------/*
+22. Recuperar la cantidad de pedidos para cada empleado indicando el código y el nombre del mismo.
+/*----------------------------------------------------------------------------------------------*/
+SELECT  count(cantidad), empleado.idEmple, empleado.nombre
+FROM pedido_has_articulo inner join empleado ON pedido_has_articulo.idPedido
+=empleado.idEmple
+GROUP BY idEmple;
+/*-----------------------------------------------------------------------/*
+23. Recuperar la cantidad pedida pendiente de entrega para cada artículo.
+/*-----------------------------------------------------------------------*/
+SELECT count(cantidad)
+FROM pedido_has_articulo
+WHERE idArticulo NOT IN (SELECT idArticulo
+				          FROM pedido_has_articulo
+                          GROUP BY idArticulo);
+/*--------------------------------------------------------------------------------------------------------/*
+24. Recuperar los departamentos para los cuales el promedio de sueldo de sus empleados sea superior a 3000.
+/*-------------------------------------------------------------------------------------------------------*/
+SELECT AVG(sueldoBasico),departamento.idDepto
+FROM   empleado, departamento
+having AVG(sueldoBasico)>3000;
+
+/*----------------------------------------------------------------------------------/*
+25.  Recuperar los artículos para los cuales la cantidad pendiente de entrega supere
+el stock. Los pedidos pendientes de entrega son los que no tienen informado el
+campo fecha_real_entrega.
+/*---------------------------------------------------------------------------------*/
+SELECT articulo.*
+FROM articulo, pedido, pedido_has_articulo, deposito_has_articulo
+WHERE cantidad>stockActual AND fechaRealEntrega IS NULL;
+/*----------------------------------------------------------------/*
+26. Insertar en la tabla Empleados un empleado con todos sus datos.
+/*----------------------------------------------------------------*/
+INSERT INTO empleado (idEmple, apellido, nombre, domicilio, codigoPostal, fechaNacimiento, fechaIngreso, sueldoBasico, telefono, idDepto, idEmpleJefe)
+VALUES (36,'Caseros', 'Leandro', 'Avenida del libertador 7300 Piso: 15 Depto B', 1428, STR_TO_DATE('10/03/1980', '%d/%m/%Y'), STR_TO_DATE('21/06/2003', '%d/%m/%Y'), 23605.23, '41073921', 5, NULL);
+/*------------------------------------------------------------------------------------------------------------------------------------/*
+27.  Insertar en la tabla Empleados un empleado indicando su código de empleado, su nombre y nulos o defaults en el resto de sus campos. 
+/*------------------------------------------------------------------------------------------------------------------------------------*/
+INSERT INTO empleado (idEmple, apellido, nombre, domicilio, codigoPostal, fechaNacimiento, fechaIngreso, sueldoBasico, telefono, idDepto, idEmpleJefe)
+VALUES(38, NULL, 'Rocio', NULL, NULL, NULL, NULL,NULL, NULL, NULL, NULL );
+
+/*-----------------------------------------------/*
+28.  Elegir un empleado y actualizar su domicilio.
+/*----------------------------------------------*/
+UPDATE empleado
+SET domicilio='Olavarria 234 Piso: 2 Depto: C'
+WHERE empleado.idEmple=7;
+/*------------------------------------------------------------------------------/*
+29.  Agregar los empleados de la tabla Nuevos_empleados a la tabla Empleados. La
+tabla nuevos_empleados tiene la misma estructura que la tabla Empleados.
+/*------------------------------------------------------------------------------*/
+SELECT * 
+FROM nuevos_empleados
+UNION SELECT * 
+FROM empleado;
+/*------------------------------------------------------/*
+30. Eliminar todos los empleados con código postal 9999
+/*-----------------------------------------------------*/
+SET SQL_SAFE_UPDATES = 0;
+DELETE FROM empleado
+WHERE codigoPostal='9999';
+/*-------------------------------------------------------------------------------------------------------------------------------/*
+31.  Dar de alta 3 artículos del tipo C con todos sus datos y uno del tipo B, indicando para este último un stock de 2126 unidades.
+/*------------------------------------------------------------------------------------------------------------------------------*/
+INSERT INTO articulo (idArticulo, descripcion, descripcionCorta, marca, tipoArticulo, precio)
+         VALUES('12', 'Jabon liquido rosas', 'jab', 'sky', 'C', 150.00);
+INSERT INTO articulo (idArticulo, descripcion, descripcionCorta, marca, tipoArticulo, precio)
+         VALUES('13', 'shampoo', 'sh', 'pantene', 'C', 275.00);
+INSERT INTO articulo (idArticulo, descripcion, descripcionCorta, marca, tipoArticulo, precio)
+         VALUES('14', 'queso rallado', 'QR', 'serenisima', 'C', 175.00);
+INSERT INTO articulo (idArticulo, descripcion, descripcionCorta, marca, tipoArticulo, precio)
+         VALUES('15', 'pan rallado', 'PO', 'MIXER', 'B', 150.00);
+ INSERT INTO Deposito_has_Articulo (stockActual, puntoReorden, idDeposito, idArticulo)
+								VALUES (2126, 15, 3, 10);
+SELECT articulo.*, deposito_has_articulo.stockActual
+FROM articulo, deposito_has_articulo
+HAVING (idArticulo=15) AND (stockActual=2126);
+     
+/*---------------------------------------------------------------------------------------------------------/*
+32.  Todos los artículos del tipo C pasaron a formar parte del tipo A. Actualizar la tabla con 1 instrucción.
+/*---------------------------------------------------------------------------------------------------------*/
+UPDATE articulo
+SET tipoArticulo='A'
+WHERE tipoArticulo='C';
+/*---------------------------------------------------------/*
+33. Restar 268 unidades al stock de los artículos de tipo B
+/*--------------------------------------------------------*/
+UPDATE deposito_has_articulo
+SET stockActual=stockActual-268
+WHERE idArticulo= ANY (SELECT idArticulo 
+                        FROM Articulo 
+                             WHERE tipoArticulo='B');
+/*-------------------------------------------------------------/*
+34.  Aumentar en un 5,5% el precio de los artículos del grupo A              
+/*------------------------------------------------------------*/
+UPDATE Articulo
+SET precio=precio*1.055
+WHERE tipoArticulo='A';
+/*--------------------------------------------------------------------/*
+35.  Disminuir en un 10% el precio de los artículos con el mayor stock.
+/*-------------------------------------------------------------------*/
+UPDATE Articulo
+SET precio=precio*0.9
+WHERE idArticulo IN (SELECT idArticulo 
+                        FROM deposito_has_articulo 
+                            WHERE stockActual=100);
+/*-----------------------------------------------------------------------------/*                            
+36. Aumentar un 20% el sueldo básico de los empleados con el menor sueldo básico.
+/*-----------------------------------------------------------------------------*/
+UPDATE Empleado
+SET sueldoBasico=sueldoBasico*1.2 
+WHERE sueldoBasico=11000;
+
+/*-------------------------------------------------------------------/* 
+37. Aumentar un 15% a los empleados con más de 20 años en la empresa.
+/*------------------------------------------------------------------*/
+UPDATE Empleado
+SET sueldoBasico=sueldoBasico*1.15
+WHERE fechaIngreso= 08/11/2000; 
+/*-----------------------------------------------------------------------------------------------/* 
+38.  Aumentar en $500,00 el sueldo de los jefes de departamento que tengan el menor sueldo básico.
+/*----------------------------------------------------------------------------------------------*/
+UPDATE Empleado
+SET sueldoBasico=sueldoBasico+500
+WHERE idEmple = 28 OR 7 OR 22 OR 12 OR 15 OR 32 OR 25 OR 23 AND idEmple = (SELECT
+idEmple WHERE sueldoBasico=11000);
+/*------------------------------------------------------------------------------------------/* 
+39.  Actualizar el precio de todos los artículos que no tienen pedidos reduciéndolo en un 10%
+/*------------------------------------------------------------------------------------------*/
+UPDATE articulo
+SET precio=precio*0.9
+WHERE idArticulo NOT IN (SELECT idArticulo FROM Pedido);
+/*------------------------------------------------------------------------/* 
+40.  Borrar todos los artículos cuyo stock es 0 y nunca han tenido pedidos.
+*------------------------------------------------------------------------*/
+DELETE FROM Articulo
+WHERE idArticulo IN (SELECT idArticulo FROM deposito_has_articulo WHERE stockActual=0
+AND idArticulo NOT IN (SELECT idArticulo FROM Pedido));
+/*------------------------------------------------------------------------------------------------------------/* 
+41.  Recuperar los artículos cuya descripción tiene al comienzo la sílaba MA y luego continúa con $ 550 ó $ 750.
+/*-----------------------------------------------------------------------------------------------------------*/
+SELECT idArticulo
+FROM Articulo
+WHERE descripcion LIKE 'MA%' AND precio=500;
+/*---------------------------------------------------------------------------------------------------/* 
+42. Listar el stock de los artículos cuya primera sílaba es ME o TE y luego continúan con R200 o R980.
+/*--------------------------------------------------------------------------------------------------*/
+SELECT stockActual
+FROM deposito_has_articulo
+WHERE idArticulo = (SELECT idArticulo 
+                         FROM Articulo 
+                                WHERE descripcion LIKE 'ME%' OR 'TE%'
+AND descripcion LIKE '%R200' OR '%R980');
+/*-----------------------------------------------------------------------------/* 
+43. Recuperar toda la estructura del departamento A (con todos sus subniveles).
+/*---------------------------------------------------------------------------*/
+SELECT *
+FROM departamento
+WHERE idDepto = 1;
+/*----------------------------------------------------------------------------/* 
+44.  Recuperar toda la línea jerárquica que se encuentra sobre el empleado 28.
+/*---------------------------------------------------------------------------*/
+SELECT *
+FROM Empleado
+WHERE idEmple=28;
+/*-----------------------------------------------------------------------------------------/* 
+45.  Recuperar el nombre de todos los empleados que dependen de XXXX (en todos los niveles).
+/*----------------------------------------------------------------------------------------*/
+SELECT nombre
+FROM empleado
+WHERE idEmpleJefe=29;
+/*-----------------------------------------------------------------------------------------/* 
+46.  Recuperar el árbol que corresponde a la estructura de departamentos de la organización.
+/*----------------------------------------------------------------------------------------*/
+SELECT descripcion
+FROM Departamento;
+/*-----------------------------------------------------------------------------------/* 
+47.  Recuperar el árbol que corresponde a la estructura de personal de la organización.
+/*-----------------------------------------------------------------------------------*/
+SELECT distinct(idEmpleJefe), nombre, idDepto
+FROM empleado;
+/*-------------------------------------------------------------------------/* 
+48.  Recuperar el nombre y el departamento de los empleados de mayor sueldo.
+/*-------------------------------------------------------------------------*/
+SELECT nombre, idDepto
+FROM empleado
+WHERE sueldoBasico>25000;
+/*-----------------------------------------------------------------------------/* 
+49.  Recuperar el nombre y el departamento de los empleados de mayor sueldo y de
+los de menor sueldo indicando en una columna la condición de mayor o de
+menor según corresponda.
+/*------------------------------------------------------------------------...-*/
+SELECT nombre, idDepto, sueldoBasico AS mayor
+FROM empleado
+WHERE sueldoBasico=25000
+UNION
+SELECT nombre, idDepto, sueldoBasico AS menor
+FROM empleado
+WHERE sueldoBasico= 11000;
+/*-----------------------------------------------------------------------------------------------------------------/* 
+50.  Obtener el departamento de los empleados que cobran, al menos, el doble que el sueldo promedio de los empleados.
+/*-----------------------------------------------------------------------------------------------------------------*/
+SELECT idDepto, nombre, apellido
+FROM Empleado
+WHERE sueldoBasico = (SELECT AVG(sueldoBasico*2) FROM Empleado);
+/*-----------------------------------------------------------------------------------------------------------------/* 
+51.  Listar los empleados que no son jefes de departamento y tienen sueldo mayor que el sueldo más alto de los jefes
+/*-----------------------------------------------------------------------------------------------------------------*/
+SELECT idEmple, nombre, apellido
+FROM Empleado
+WHERE idEmple=idEmpleJefe AND sueldoBasico =(SELECT MAX(sueldoBasico) FROM
+Empleado);
+/*------------------------------------------/*
+52.  Generar el pedido 24 que es igual al 13.
+/*-----------------------------------------*/
+INSERT INTO Pedido (idPedido, fechaPactadaEntrega, fechaRealEntrega,
+idDepositoEntrega, idCliente, idEmple)
+VALUES (24, 21/2/2001, 3/3/2001, 2, 4, 6);
+/*-------------------------------------------------------------------------------------------------------------------------------/*
+53. Listar los números de pedido que vendieron el artículo 23, pero no el 54. Resolver este ejercicio de 3 formas diferentes. (AR)
+/*-------------------------------------------------------------------------------------------------------------------------------*/
+SELECT idPedido
+FROM pedido_has_articulo
+WHERE idArticulo=23 AND idPedido=54;
+
+SELECT idPedido
+FROM pedido_has_articulo
+WHERE idArticulo=23 AND idArticulo NOT IN (SELECT idArticulo 
+                                                 FROM pedido_has_articulo
+                                                      WHERE idPedido=54);
+
+SELECT idPedido
+FROM pedido_has_articulo
+WHERE idPedido=54 AND idArticulo IN (SELECT idArticulo 
+                                                   FROM pedido_has_articulo 
+                                                         WHERE  idArticulo=23);
+/*-------------------------------------------------------------------------------------------------------------------------/*                                                         
+54.  Repetir los 3 ejercicios anteriores, pero ahora recuperar los nombres de los empleados en cada una de esas situaciones.     
+/*-------------------------------------------------------------------------------------------------------------------------*/    
+SELECT idPedido
+FROM pedido_has_articulo
+WHERE idArticulo=23 AND idPedido=54 AND idPedido IN
+(SELECT idPedido FROM Pedido WHERE idEmple IN (SELECT nombre FROM
+Empleado));
+/*----------------------------------------------------------------------------------------------------------------/*  
+55.  Indicar para cada artículo su nombre, la cantidad total pendiente de entrega y la cantidad total en depósito.
+/*----------------------------------------------------------------------------------------------------------------*/
+SELECT idArticulo, descripcion
+FROM Articulo
+WHERE idArticulo IN (SELECT idArticulo FROM deposito_has_articulo WHERE stockActual IN
+(SELECT stockActual FROM deposito_has_articulo WHERE puntoReorden IN
+(SELECT puntoReorden FROM deposito_has_articulo)));
+/*-----------------------------------------------------------------------------------------/*  
+56.  Indicar el nombre de los artículos que tienen stock en todos los depósitos. Uso de Null.
+/*-----------------------------------------------------------------------------------------*/
+SELECT descripcion
+FROM Articulo
+WHERE idArticulo IN (SELECT idArticulo FROM deposito_has_articulo WHERE stockActual IS
+NOT NULL);
+/*-------------------------------------------------------------------------------/*  
+57. Informar el sueldo actual de los empleados y junto con el sueldo incrementado
+en $ 500 para los empleados del departamento de Investigación y desarrollo.
+/*-----------------------------------------------------------------------------*/
+SELECT sueldoBasico+500
+FROM Empleado
+WHERE idDepto=6;
+/*---------------------------------------------------------------------------------------------------------------/*  
+58. Informar el precio actual de los artículos con stock menor a 50 unidades y el precio con un descuento del 15%.
+/*--------------------------------------------------------------------------------------------------------------*/
+SELECT idArticulo, precio
+FROM Articulo
+WHERE idArticulo IN (SELECT idArticulo FROM deposito_has_articulo WHERE stockActual<
+50);
+/*-------------------------------------------------------------------------------------/*  
+59. Informar todos los artículos con el precio menor o igual al precio del artículo 121.
+/*------------------------------------------------------------------------------------*/
+SELECT idArticulo
+FROM Articulo
+WHERE precio = (SELECT precio FROM Articulo WHERE idArticulo=121);
+/*----------------------------------------------------------------------------------------------------------------------------------------------/*  
+60. Informar todos los artículos con los detalles de pedidos para todos independientemente que no tengan y cuya cantidad del pedido sea menor a 2.
+/*----------------------------------------------------------------------------------------------------------------------------------------------*/
+SELECT idArticulo, descripcion
+FROM Articulo
+WHERE idArticulo IN (SELECT idArticulo FROM pedido_has_articulo WHERE cantidad<2);
+/*-----------------------------------------------------/*  
+61. Obtener el monto total de sueldos por departamento.
+/*----------------------------------------------------*/
+SELECT SUM(sueldoBasico) AS MontoTotal, idDepto                   
+FROM Empleado
+WHERE idDepto = 2
+UNION
+SELECT SUM(sueldoBasico) AS MontoTotal, idDepto
+FROM Empleado
+WHERE idDepto = 3
+UNION
+SELECT SUM(sueldoBasico) AS MontoTotal, idDepto
+FROM Empleado
+WHERE idDepto = 4
+UNION
+SELECT SUM(sueldoBasico) AS MontoTotal, idDepto
+FROM Empleado
+WHERE idDepto = 5
+UNION
+SELECT SUM(sueldoBasico) AS MontoTotal, idDepto
+FROM Empleado
+WHERE idDepto = 6
+UNION
+SELECT SUM(sueldoBasico) AS MontoTotal, idDepto
+FROM Empleado
+WHERE idDepto = 7
+UNION
+SELECT SUM(sueldoBasico) AS MontoTotal, idDepto
+FROM Empleado
+WHERE idDepto = 8
+UNION
+SELECT SUM(sueldoBasico) AS MontoTotal, idDepto
+FROM Empleado
+WHERE idDepto = 9;
+/*---------------------------------------------/*  
+62.  Informar los artículos con el menor precio.
+/*--------------------------------------------*/
+SELECT idArticulo, descripcion, MIN(precio)
+FROM Articulo;
+/*-------------------------------------------------/*  
+63.  Informar todos los empleados que no tienen jefe.
+/*-------------------------------------------------*/
+SELECT idEmple, nombre, apellido
+FROM Empleado
+WHERE idEmpleJefe = NULL;
+/*---------------------------------------------------------/*  
+64. Informar todos los departamentos que no tienen empleados.
+/*---------------------------------------------------------*/
+SELECT idDepto, descripcion
+FROM Departamento
+WHERE idEmpleResponsable IS NULL;
+
+
+
+
+
+
+
+

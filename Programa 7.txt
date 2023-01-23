@@ -1,0 +1,30 @@
+//Programa suma elementos de una matriz
+package guia2;
+
+public class Ejercicio01 {
+
+	public static void main(String[]args) {
+		
+		int[][]matriz= {{1,2,3},{4,5,6}};
+		int resultado = sumadeElementos(matriz);
+		System.out.println(resultado);
+		
+	}
+	
+	public static int sumadeElementos (int [][] matriz) {
+	int sum=0;
+	
+	for(int i=0; i<matriz.length;i++) {
+		for(int j=0; j<matriz[i].length; j++) {
+			
+			sum+=matriz[i][j];
+			
+		}
+	}
+	
+		return sum;
+		
+		
+		
+	}
+}

@@ -1,0 +1,24 @@
+Programa suma elementos de la fila
+
+package guia2;
+
+public class Ejercicio09 {
+	public static void main(String[]args) {
+		
+		
+	int[][]m= {{10,2,3},{4,15,6},{6,8,9}};
+	int x=0;
+	int resultado = sumaElementosFila(m, x);
+	System.out.println(resultado);
+	}
+
+	public static int sumaElementosFila(int[][] m, int x) {
+	int sum=0;
+	for(int j=0;j<m[x].length;j++) {
+	sum+=m[x][j];
+					
+}
+	return sum;
+	}
+
+}

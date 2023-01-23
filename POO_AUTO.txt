@@ -1,0 +1,54 @@
+package poo;
+
+public class coche {
+
+	
+//Atributos
+	
+	String marca;
+	String modelo;
+	int km;
+	int añosdeuso;
+	
+	//metodo  vacio
+	
+	public static void main (String[]args) {
+		
+		coche coche1=new coche();
+		
+		coche1.marca= "gris";
+		coche1.modelo="partner";
+		coche1.km=147000;
+		coche1.añosdeuso=9;
+		
+		
+		System.out.println("La marca del auto es: "+coche1.marca);
+		System.out.println("La marca del auto es: "+coche1.modelo);
+		System.out.println("La marca del auto es: "+coche1.km);
+		
+		System.out.println("La marca del auto es: "+coche1.añosdeuso);
+		
+		coche coche2=new coche();
+		
+		coche2.marca="azul";
+		coche2.modelo="ferrari";
+		coche2.km=0;
+		coche2.añosdeuso=0;
+		
+		
+		System.out.println("\nel segundo auto tiene las siguientes caracteristicas:");
+		
+		
+		
+		System.out.println("La marca del auto es: "+coche2.marca);
+		System.out.println("La marca del auto es: "+coche2.modelo);
+		System.out.println("La marca del auto es: "+coche2.km);
+		
+		
+	}
+
+	
+	
+	
+}
+

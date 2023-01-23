@@ -1,0 +1,33 @@
+//Programa devuelve la posición en la que se encuntra el número más chico. JAVA
+
+package guia1;
+
+public class Ejercicio01 {
+// a= {8, 9, 4, 1, 2};
+// a.length => 4
+
+	public static void main(String[] args) {
+        int[] array = {8, 9, 4, 1, 2 };
+
+        int r = posicionMenor(array);
+        System.out.println(r);
+    }
+
+    public static int posicionMenor(int[] r) {
+        int posmenor = 0;
+
+        for (int i = 1; i < r.length; ++i) {
+            if (r[posmenor] > r[i]) {
+                posmenor = i;
+            }
+        }
+        
+        return posmenor;
+
+    }
+
+}
+
+
+
+

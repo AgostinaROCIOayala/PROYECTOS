@@ -1,0 +1,32 @@
+//Programa suma de matrices
+package guia2;
+
+public class Ejercicio15 {
+	
+	
+	public static void main(String[]args) {
+		
+		int [][]a= {{1,2,3},{4,5,6}};
+		int [][]b= {{7,8,9},{10,11,12}};
+		
+		int[][] r = sumaMatricial(a,b);
+		
+		for(int i=0;i<r.length;i++) {
+			for(int j=0;j<r[i].length;j++) {
+		
+		System.out.print("|"+r[i][j]+"|");
+		}
+		}
+	}
+ public static int [][] sumaMatricial(int a[][], int b[][]){
+			
+ int[][] c = new int[a.length][a[0].length];
+		
+ for(int i=0;i<c.length;i++) {
+ for(int j=0;j<c[i].length;j++) {
+	 c[i][j]=a[i][j]+b[i][j];
+	}
+     }
+ return c;
+ }
+}
